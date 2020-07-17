@@ -1,0 +1,165 @@
+<!DOCTYPE XHTML>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>entity-fishing - Entity Recognition and Disambiguation</title>
+		<link rel="icon" type="image/x-icon" href="resources/img/favicon.ico"/> 
+		<link rel="shortcut icon" type="image/x-icon" href="resources/img/favicon.ico"/>
+
+        <script src="resources/js/jquery-1.8.1.min.js"></script> 
+		<!--script src="brat/client/lib/jquery.min.js"></script--> 
+        <script src="resources/js/jquery.form.js"></script>
+		
+        <script src="resources/bootstrap/js/bootstrap.min.js"></script>  
+		
+        <!--script src="resources/bootstrap/js/prettify.js"></script--> 
+		<!--script src="resources/bootstrap/js/lang-ml.js"></script-->      
+        <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" media="screen"/>
+		<!--link rel="stylesheet" href="resources/bower_components/Font-Awesome/css/font-awesome.css"-->
+		<link rel="stylesheet" href="resources/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" href="resources/css/style.css"/>     
+		<link rel="stylesheet" href="resources/css/awesome-bootstrap-checkbox.css"/>
+ 		<!--link href="resources/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" media="screen"/-->  
+		<!--link href="resources/bootstrap/css/prettify.css"/-->    
+        <!--link rel="stylesheet" type="text/css" href="brat/style-vis.css"/-->
+		<!--script type="text/javascript" src="brat/client/lib/head.load.min.js"></script--> 
+        
+       	<script type="text/javascript" src="resources/bootstrap/js/prettify.js"></script> 
+		<script type="text/javascript" src="resources/js/vkbeautify.js"></script>
+ 	    <!--script type="text/javascript" src="resources/js/Markdown.Converter.js"></script--> 
+		<!--script type="text/javascript" src="resources/js/markdown.min.js"></script--> 
+		<!--script type="text/javascript" src="resources/js/wiky.js"></script-->
+
+		<!-- for using brat -->            
+		<!--script src="brat/client/lib/jquery.svg.min.js"></script> 
+		<script src="brat/client/lib/jquery.svgdom.min.js"></script>  
+   
+	    <script src="brat/client/src/configuration.js"></script>     
+	    <script src="brat/client/src/util.js"></script>   
+		<script src="brat/client/src/annotation_log.js"></script>   
+		<script src="brat/client/lib/webfont.js"></script>
+		
+       	<script src="brat/client/src/dispatcher.js"></script>     
+	    <script src="brat/client/src/url_monitor.js"></script>   
+		<script src="brat/client/src/visualizer.js"></script-->
+
+		<!-- our custum brat configuration -->  
+		<!--script src="cendari/brat-configuration.js"></script-->
+
+		<!-- to render wiki syntax in html -->
+		<script type="text/javascript" src="resources/js/wiki2html.js"></script>
+        <link href="resources/css/wiky.css" rel="stylesheet" type="text/css">
+
+        <!-- PDF.js stuff -->
+        <link type="text/css" href="resources/pdf.js/web/text_layer_builder.css" rel="stylesheet"/>
+        <link type="text/css" href="resources/pdf.js/web/annotation_layer_builder.css" rel="stylesheet"/>
+        <script type="text/javascript" src="resources/pdf.js/web/text_layer_builder.js"></script>
+        <script type="text/javascript" src="resources/pdf.js/web/pdf_link_service.js"></script>
+        <script type="text/javascript" src="resources/pdf.js/web/annotation_layer_builder.js"></script>
+        <script type="text/javascript" src="resources/pdf.js/build/pdf.js"></script>
+
+ 		<!-- The Javascript library -->
+        <script src="nerd/nerd.js"></script>
+
+    </head>
+    
+    <body>  
+		<div class="container" style="width:85%;">  
+			
+		  <div class="content">  
+			
+		    <div class="page-header">
+				 <h1><span style="color:#333;">entity-fishing<!--img src="resources/img/nerd_header_logo.png" /-->
+	            	<span style="padding-left:40px;color:#AE0C0C;">		
+						<h2><small>
+							<a class="section-active" id="about" href="#">About</a> <span style="padding-left:20px;">&nbsp;</span>
+							<a class="section-not-active" id="services" href="#">Services</a> <span style="padding-left:20px;">&nbsp;</span>
+							<!--a class="section-not-active" id="demo" href="#">Demo</a> <span style="padding-left:20px;">&nbsp;</span-->
+							<!--a class="section-not-active" id="admin" href="#">Admin</a> <span style="padding-left:20px;">&nbsp;</span-->
+						</small></h2>
+					</span>
+				 </span></h1>
+	        </div>
+
+			<table border="0">
+				<tr>
+				<td style="width:100px;align:left;vertical-align: top;"><h3><span id="subTitle"></span></h3></td>
+	            <td style="align:left;vertical-align: top;">
+					<div id="divAbout"> 
+						<p><large><b>entity-fishing</b> - </large>Entity Recognition and Disambiguation </p>
+						<p>This text analysis console/demo is based on a set of JSON REST services.</p>
+						<p>For more details check the <a style="color:#BC0E0E;" href="http://www.github.com/kermitt2/entity-fishing">GitHub repo</a> and the <a style="color:#BC0E0E;" href="http://nerd.readthedocs.io">documentation</a>.</p>
+						<p>Contact: <a style="color:#BC0E0E;" href="mailto:patrice.lopez@science-miner.com?subject=entity-fishing">Patrice Lopez</a>.</p>
+					</div>
+				</td> 
+			    </tr>
+			</table>
+			
+			<div id="divServices"> 
+				<div class="form-horizontal" method="post" id="gbdForm" target=_blank accept-charset="UTF-8">
+					<table border="0">
+						<tr>
+							<td>Service to call &nbsp;</td>
+							<td>
+								<table>
+									<tr>
+										<td>
+								<select id="selectedService">
+				                    <option value="processLanguage">Language identification</option>
+									<option value="processSentenceSegmentation">Sentence segmentation</option>	
+									<option value="processNERDQuery">disambiguate - text</option>
+									<option value="processNERDQueryPDF">disambiguate - PDF</option>
+									<option value="KBConcept">Concept look-up</option>
+									<option value="KBTermLookup">Term look-up</option>
+								</select>
+										</td>
+										<td>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<!--tr><td>&nbsp;</td><td/></tr-->
+						<tr>
+							<td><span id="label"/></td>
+							<td>
+								<div id="field"/>			
+							</td>
+						</tr>
+						<!--tr><td>&nbsp;</td><td/></tr-->
+						<tr>
+							<td><span id="labelFile"/></td>
+							<td style="vertical-align: middle;">
+								<div id="fieldFile" style="vertical-align: middle;"/>			
+							</td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td><td colspan="2">
+								<table>
+									<tr>
+										<td>
+											<input id="submitRequest" type="submit" value="Submit" class="btn btn-success"/>
+										</td>
+										<td>
+											<input id="clearRequest" type="submit" value="Clear" class="btn"/>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+			        </table>
+				</div>
+				<br>
+				<div id="infoResult"></div>
+				<div id="requestResult"></div>
+			</div>
+
+	    </div>  
+
+		<footer>
+		  <p><!--span style="color:#848484;">&copy; SCIENCE-MINER and the contributors - 2020 </span--></p>
+		  </footer>
+		</div>
+
+    </body> 
+</html>

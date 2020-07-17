@@ -1,0 +1,7 @@
+# entity-fishing configuration for the different mention recognizers
+
+# path to the GROBID home (for grobid-ner, grobid, etc.)
+grobidHome: ./dependency_install/grobid-0.6.0/grobid-home/
+
+# path to the species resource files 
+speciesPath: data/species
