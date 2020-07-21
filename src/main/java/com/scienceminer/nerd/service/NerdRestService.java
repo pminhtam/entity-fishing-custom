@@ -159,13 +159,14 @@ public class NerdRestService implements NerdPaths {
         return NerdRestProcessString.processLanguageIdentification(text);
     }
 
-    private static String processLine(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery){
-	String query_string = (String) query_json_file.get("abstract");
+    private static String processLine(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery,String textField){
+	String query_string = (String) query_json_file.get(textField);
 	JSONObject new_query_json = new JSONObject(query_json);
 	new_query_json.put("text", query_string);
 	System.out.println("chay thread ne");
 	String json = nerdProcessQuery.processQuery(new_query_json.toString());
-	return json;
+	query_json_file.put("result",json);
+	return query_json_file.toString();
 						    //        myWriter.write(json+"\n");
 	}
     @POST
@@ -185,14 +186,20 @@ public class NerdRestService implements NerdPaths {
             } else {
       		//File myObj = new File("/hdd/tam/entity-fishing/data_crawl/part-r-00004-9bfc16ff-e010-45c8-9905-4d66c4a66507");
   		//FileWriter myWriter = new FileWriter("/hdd/tam/entity-fishing/data_crawl/result_00004_.txt");
-
-		Object obj = parser.parse(query);
+		
+		//Object obj = parser.parse(query);
+		Object obj = parser.parse("{ \"text\": \"\", \"shortText\": \"computer The number of passengers coming to underground\", \"termVector\": [], \"language\": { \"lang\": \"en\" }, \"entities\": [], \"mentions\": [ \"ner\", \"wikipedia\" ], \"nbest\": false, \"sentence\": false }");
 		final JSONObject query_json = (JSONObject) obj;
-		String inputFile = "part-r-00004-9bfc16ff-e010-45c8-9905-4d66c4a66507";
-      		File myObj = new File("/hdd/tam/entity-fishing/data_crawl/"+ inputFile );
+		//String inputFile = "part-r-00004-9bfc16ff-e010-45c8-9905-4d66c4a66507";
+      		//File myObj = new File("/hdd/tam/entity-fishing/data_crawl/"+ inputFile );
+		Object obj_query_info = parser.parse(query);
+		JSONObject obj_query_info_json = (JSONObject) obj_query_info;
+		String inputPath =(String) obj_query_info_json.get("input");
+		String outputPath = (String) obj_query_info_json.get("output");
+		final String textField =(String) obj_query_info_json.get("text_field");
 
-  		FileWriter myWriter = new FileWriter("/hdd/tam/entity-fishing/data_crawl/result_paralell_"+inputFile+".txt");
-
+      		File myObj = new File(inputPath);
+  		FileWriter myWriter = new FileWriter(outputPath);
             	Scanner myReader = new Scanner(myObj);
 
 
@@ -224,7 +231,7 @@ public class NerdRestService implements NerdPaths {
                                     //JSONObject query_json_file = (JSONObject) obj;
                                     //Object obj2 = parser.parse(query);
                                     //JSONObject query_json = (JSONObject) obj2;
-                                    String result = processLine(listData.get(index),query_json,nerdProcessQuery);
+                                    String result = processLine(listData.get(index),query_json,nerdProcessQuery,textField);
                                     synchronized (listResult){
                                         listResult.add(result);
                                     }
@@ -270,9 +277,9 @@ public class NerdRestService implements NerdPaths {
 		//query_json = (JSONObject) obj;
 		System.out.println(query_json);
 
-                json = nerdProcessQuery.processQuery(query);
-		System.out.println(query);
-		System.out.println(json);
+                //json = nerdProcessQuery.processQuery(query);
+		//System.out.println(query);
+		//System.out.println(json);
             }
 
             if (json == null) {
