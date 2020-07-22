@@ -162,8 +162,14 @@ public class NerdRestService implements NerdPaths {
         return NerdRestProcessString.processLanguageIdentification(text);
     }
 
-    private static String processLine(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery,String textField,String resultLangStr){
-	String query_string = (String) query_json_file.get(textField);
+    private static String processLine(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery,JSONArray textField,String resultLangStr){
+	    
+	String query_string = "";
+	for (int i =0 ; i<textField.size();i++){
+		query_string += "  ";
+		query_string += (String) query_json_file.get(textField.get(i));
+	}
+	//String query_string = (String) query_json_file.get(textField);
 	JSONObject new_query_json = new JSONObject(query_json);
 	new_query_json.put("text", query_string);
 	//System.out.println(new_query_json.get("language"));
@@ -207,15 +213,19 @@ public class NerdRestService implements NerdPaths {
 		JSONObject obj_query_info_json = (JSONObject) obj_query_info;
 		String inputPath =(String) obj_query_info_json.get("input");
 		String outputPath = (String) obj_query_info_json.get("output");
-		//final JSONArray textField = obj_query_info_json.getJSONArray("text_field");
-		final String textField =(String) obj_query_info_json.get("text_field");
-		//final String textFieldLang =(String) textField;
+		final JSONArray textField =(JSONArray) obj_query_info_json.get("text_field");
+		//final String textField =(String) obj_query_info_json.get("text_field");
+		//System.out.println(textField.get(0));
+		System.out.println(textField.size());
+		
+		
+		final String textFieldLang =(String) textField.get(0);
 
       		File myObj = new File(inputPath);
   		FileWriter myWriter = new FileWriter(outputPath);
             	Scanner myReader = new Scanner(myObj);
 
-
+		
                 Thread[] threads = new Thread[15];
                 final ArrayList<JSONObject> listData = new ArrayList<>(15);
                 ArrayList<String> listResult = new ArrayList<>(15);
@@ -243,7 +253,7 @@ public class NerdRestService implements NerdPaths {
                             //String result = processLine(query_json_file,query_json,nerdProcessQuery);
 			
                             threads[i] = new Thread(new Runnable() {
-                                public void run() {
+                               public void run() {
                                     //Object obj = parser.parse(listData.get(index));
                                     //JSONObject query_json_file = (JSONObject) obj;
                                     //Object obj2 = parser.parse(query);
@@ -251,7 +261,7 @@ public class NerdRestService implements NerdPaths {
 				    String resultLangStr = "en";
 				    synchronized (languageIdentifier) {
 					//resultLang = languageIdentifier.runLanguageId((String)listData.get(index).get(textField));
-					resultLangStr = languageIdentifier.runLanguageId((String)listData.get(index).get(textField)).getLang();
+					resultLangStr = languageIdentifier.runLanguageId((String)listData.get(index).get(textFieldLang)).getLang();
 					//if(resultLang!=null){
 					//	resultLangStr = resultLang.getLang();
 					//}
@@ -278,7 +288,7 @@ public class NerdRestService implements NerdPaths {
                     }
 		    System.out.println("Het 1 vong lap");
                 }
-
+		
 
 		//ExecutorService executorService = Executors.newFixedThreadPool(16);
 
