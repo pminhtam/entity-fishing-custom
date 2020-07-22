@@ -32,6 +32,9 @@ import java.io.FileWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.ArrayList;
+import org.grobid.core.utilities.LanguageUtilities;
+import org.grobid.core.lang.Language;
+
 
 
 
@@ -159,11 +162,19 @@ public class NerdRestService implements NerdPaths {
         return NerdRestProcessString.processLanguageIdentification(text);
     }
 
-    private static String processLine(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery,String textField){
+    private static String processLine(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery,String textField,String resultLangStr){
 	String query_string = (String) query_json_file.get(textField);
 	JSONObject new_query_json = new JSONObject(query_json);
 	new_query_json.put("text", query_string);
-	System.out.println("chay thread ne");
+	//System.out.println(new_query_json.get("language"));
+	//System.out.println(new_query_json.toString());
+	JSONObject jsonLang = new JSONObject();
+	jsonLang.put("lang",resultLangStr);
+	new_query_json.put("language",jsonLang);
+
+	//System.out.println(new_query_json.get("language"));
+	//System.out.println(new_query_json.toString());
+	//System.out.println("chay thread ne");
 	String json = nerdProcessQuery.processQuery(new_query_json.toString());
 	query_json_file.put("result",json);
 	return query_json_file.toString();
@@ -188,7 +199,7 @@ public class NerdRestService implements NerdPaths {
   		//FileWriter myWriter = new FileWriter("/hdd/tam/entity-fishing/data_crawl/result_00004_.txt");
 		
 		//Object obj = parser.parse(query);
-		Object obj = parser.parse("{ \"text\": \"\", \"shortText\": \"computer The number of passengers coming to underground\", \"termVector\": [], \"language\": { \"lang\": \"en\" }, \"entities\": [], \"mentions\": [ \"ner\", \"wikipedia\" ], \"nbest\": false, \"sentence\": false }");
+		Object obj = parser.parse("{ \"text\": \"\", \"shortText\": \"computer The number of passengers coming to underground\", \"termVector\": [], \"language\": { \"lang\": \"de\" }, \"entities\": [], \"mentions\": [ \"ner\", \"wikipedia\" ], \"nbest\": false, \"sentence\": false }");
 		final JSONObject query_json = (JSONObject) obj;
 		//String inputFile = "part-r-00004-9bfc16ff-e010-45c8-9905-4d66c4a66507";
       		//File myObj = new File("/hdd/tam/entity-fishing/data_crawl/"+ inputFile );
@@ -196,7 +207,9 @@ public class NerdRestService implements NerdPaths {
 		JSONObject obj_query_info_json = (JSONObject) obj_query_info;
 		String inputPath =(String) obj_query_info_json.get("input");
 		String outputPath = (String) obj_query_info_json.get("output");
+		//final JSONArray textField = obj_query_info_json.getJSONArray("text_field");
 		final String textField =(String) obj_query_info_json.get("text_field");
+		//final String textFieldLang =(String) textField;
 
       		File myObj = new File(inputPath);
   		FileWriter myWriter = new FileWriter(outputPath);
@@ -207,6 +220,10 @@ public class NerdRestService implements NerdPaths {
                 final ArrayList<JSONObject> listData = new ArrayList<>(15);
                 ArrayList<String> listResult = new ArrayList<>(15);
 		Object obj2;
+		
+		LanguageUtilities languageIdentifier = LanguageUtilities.getInstance();
+		final Language resultLang = null;
+		//String resultLangStr = "";
 
                 while (myReader.hasNextLine()) {
                     String data = myReader.nextLine();
@@ -231,7 +248,16 @@ public class NerdRestService implements NerdPaths {
                                     //JSONObject query_json_file = (JSONObject) obj;
                                     //Object obj2 = parser.parse(query);
                                     //JSONObject query_json = (JSONObject) obj2;
-                                    String result = processLine(listData.get(index),query_json,nerdProcessQuery,textField);
+				    String resultLangStr = "en";
+				    synchronized (languageIdentifier) {
+					//resultLang = languageIdentifier.runLanguageId((String)listData.get(index).get(textField));
+					resultLangStr = languageIdentifier.runLanguageId((String)listData.get(index).get(textField)).getLang();
+					//if(resultLang!=null){
+					//	resultLangStr = resultLang.getLang();
+					//}
+					System.out.println(resultLangStr);
+				    }
+                                    String result = processLine(listData.get(index),query_json,nerdProcessQuery,textField,resultLangStr);
                                     synchronized (listResult){
                                         listResult.add(result);
                                     }
