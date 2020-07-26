@@ -214,6 +214,7 @@ public class NerdRestService implements NerdPaths {
 		String inputPath =(String) obj_query_info_json.get("input");
 		String outputPath = (String) obj_query_info_json.get("output");
 		final JSONArray textField =(JSONArray) obj_query_info_json.get("text_field");
+		String companyField = (String) obj_query_info_json.get("company_field");
 		//final String textField =(String) obj_query_info_json.get("text_field");
 		//System.out.println(textField.get(0));
         //System.out.println(query.toString());
@@ -248,6 +249,17 @@ public class NerdRestService implements NerdPaths {
 
         //System.out.println(String.valueOf(myReader.hasNextLine()));
         //LOGGER.info(String.valueOf(myReader.hasNextLine()));
+	// Read list of company 
+	ArrayList<String> listCompanyName = new ArrayList<>();
+	File list_company = new File("list_company_name.txt");
+	Scanner myReaderListCompanyName = new Scanner(list_company, "UTF-8");
+	while (myReaderListCompanyName.hasNextLine()){
+		String data = myReaderListCompanyName.nextLine();
+		String companyName = data.split("\n")[0];
+		//System.out.println(companyName);
+		listCompanyName.add(companyName);
+	}
+
 
         while (myReader.hasNextLine()) {
             String data = myReader.nextLine();
@@ -256,6 +268,12 @@ public class NerdRestService implements NerdPaths {
 		    //System.out.println(data);
 		    obj2 = parser.parse(data);
 		    JSONObject query_json_file = (JSONObject) obj2;
+		    String companyQuery =(String) query_json_file.get(companyField);
+		   if (!listCompanyName.contains(companyQuery)){
+			   //System.out.println(companyQuery);
+		   	continue;
+		   }
+		   System.out.println(companyQuery);
             listData.add(query_json_file);
 		    //final listData;
             if (listData.size()>numThreads){
