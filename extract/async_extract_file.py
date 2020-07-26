@@ -57,6 +57,10 @@ async def async_extract_all(datapath, outputpath,textfield, companyfield):
         print(filepath)
         if os.path.isdir(filepath): continue
         current_ds = filepath.split('/')[-2]
+        if "indeed" in filepath:
+            current_ds = "indeed"
+        if "patent" in filepath:
+            current_ds = "patent"
         filename = os.path.basename(filepath)
         output_file_base = os.path.join(output_dir,current_ds)
         if not os.path.exists(output_file_base):
@@ -88,6 +92,10 @@ if __name__ == '__main__':
     # uvloop.install()
     start = time.perf_counter()
     current_ds = args.datapath.split('/')[-2]
+    if "indeed" in args.datapath:
+        current_ds = "indeed"
+    if "patent" in args.datapath:
+        current_ds = "patent"
     companyfield = ""
     if current_ds == "patent":
         companyfield = "company_name"
