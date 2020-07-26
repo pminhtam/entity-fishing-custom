@@ -232,10 +232,11 @@ public class NerdRestService implements NerdPaths {
         //LOGGER.info("InputPath".concat(inputPath));
         //System.out.println("File size in bytes " + myObj.length());
 
+        int numThreads = 15;
 		
-        Thread[] threads = new Thread[15];
-        final ArrayList<JSONObject> listData = new ArrayList<>(15);
-        ArrayList<String> listResult = new ArrayList<>(15);
+        Thread[] threads = new Thread[numThreads];
+        final ArrayList<JSONObject> listData = new ArrayList<>(numThreads);
+        ArrayList<String> listResult = new ArrayList<>(numThreads);
 		Object obj2;
 
         //System.out.println("Open inputfile");
@@ -257,7 +258,7 @@ public class NerdRestService implements NerdPaths {
 		    JSONObject query_json_file = (JSONObject) obj2;
             listData.add(query_json_file);
 		    //final listData;
-            if (listData.size()>15){
+            if (listData.size()>numThreads){
                for (int i = 0; i < threads.length; i++){
                   final int index = i+1;
 			      System.out.println("chay vong lap thread");
