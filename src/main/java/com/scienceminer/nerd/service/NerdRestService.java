@@ -216,36 +216,51 @@ public class NerdRestService implements NerdPaths {
 		final JSONArray textField =(JSONArray) obj_query_info_json.get("text_field");
 		//final String textField =(String) obj_query_info_json.get("text_field");
 		//System.out.println(textField.get(0));
-		System.out.println(textField.size());
+        //System.out.println(query.toString());
+
+		//System.out.println(textField.size());
+        //LOGGER.info("Text size" + Integer.toString(textField.size()));
 		
 		
 		final String textFieldLang =(String) textField.get(0);
 
-      		File myObj = new File(inputPath);
+      	File myObj = new File(inputPath);
   		FileWriter myWriter = new FileWriter(outputPath);
-            	Scanner myReader = new Scanner(myObj);
+        Scanner myReader = new Scanner(myObj, "UTF-8");
+
+        //System.out.println("InputPath ".concat(inputPath));
+        //LOGGER.info("InputPath".concat(inputPath));
+        //System.out.println("File size in bytes " + myObj.length());
 
 		
-                Thread[] threads = new Thread[15];
-                final ArrayList<JSONObject> listData = new ArrayList<>(15);
-                ArrayList<String> listResult = new ArrayList<>(15);
+        Thread[] threads = new Thread[15];
+        final ArrayList<JSONObject> listData = new ArrayList<>(15);
+        ArrayList<String> listResult = new ArrayList<>(15);
 		Object obj2;
+
+        //System.out.println("Open inputfile");
+        //LOGGER.info("Open inputfile");
 		
 		LanguageUtilities languageIdentifier = LanguageUtilities.getInstance();
 		final Language resultLang = null;
 		//String resultLangStr = "";
 
-                while (myReader.hasNextLine()) {
-                    String data = myReader.nextLine();
+        //System.out.println(String.valueOf(myReader.hasNextLine()));
+        //LOGGER.info(String.valueOf(myReader.hasNextLine()));
+
+        while (myReader.hasNextLine()) {
+            String data = myReader.nextLine();
+            //System.out.println(data);
+            //LOGGER.info(data);
 		    //System.out.println(data);
 		    obj2 = parser.parse(data);
 		    JSONObject query_json_file = (JSONObject) obj2;
-                    listData.add(query_json_file);
+            listData.add(query_json_file);
 		    //final listData;
-                    if (listData.size()>15){
-                        for (int i = 0; i < threads.length; i++){
-                            final int index = i+1;
-			    System.out.println("chay vong lap thread");
+            if (listData.size()>15){
+               for (int i = 0; i < threads.length; i++){
+                  final int index = i+1;
+			      System.out.println("chay vong lap thread");
 			    //final obj = parser.parse(listData.get(index));
                             //final JSONObject query_json_file = (JSONObject) obj;
                             //final Object obj2 = parser.parse(query);
