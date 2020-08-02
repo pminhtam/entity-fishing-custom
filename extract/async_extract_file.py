@@ -59,8 +59,12 @@ async def async_extract_all(datapath, outputpath,textfield, companyfield):
         current_ds = filepath.split('/')[-2]
         if "indeed" in filepath:
             current_ds = "indeed"
-        if "patent" in filepath:
+        elif "patent" in filepath:
             current_ds = "patent"
+        elif "register" in filepath:
+            current_ds = "register"
+        else:
+            raise Exception("Dataset not recognized")
         filename = os.path.basename(filepath)
         output_file_base = os.path.join(output_dir,current_ds)
         if not os.path.exists(output_file_base):
@@ -94,11 +98,17 @@ if __name__ == '__main__':
     current_ds = args.datapath.split('/')[-2]
     if "indeed" in args.datapath:
         current_ds = "indeed"
-    if "patent" in args.datapath:
+    elif "patent" in args.datapath:
         current_ds = "patent"
+    elif "register" in args.datapath:
+        current_ds = "register"
+    else:
+        raise Exception("Dataset not recognized")
     companyfield = ""
     if current_ds == "patent":
         companyfield = "company_name"
+    elif current_ds == "register":
+        companyfield = "name"
     else:
         companyfield = "companyName"
     print(current_ds)
