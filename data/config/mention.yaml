@@ -1,7 +1,0 @@
-# entity-fishing configuration for the different mention recognizers
-
-# path to the GROBID home (for grobid-ner, grobid, etc.)
-grobidHome: /root/grobid/grobid-home/
-
-# path to the species resource files 
-speciesPath: data/species
