@@ -1,5 +1,7 @@
 package com.scienceminer.nerd.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.scienceminer.nerd.disambiguation.NerdEngine;
 import com.scienceminer.nerd.embeddings.SimilarityScorer;
 import com.scienceminer.nerd.exceptions.CustomisationException;
@@ -8,6 +10,7 @@ import com.scienceminer.nerd.exceptions.ResourceNotFound;
 import com.scienceminer.nerd.kb.Lexicon;
 import com.scienceminer.nerd.kb.UpperKnowledgeBase;
 import com.scienceminer.nerd.mention.ProcessText;
+import com.scienceminer.nerd.utilities.NerdConfig;
 import com.sun.jersey.multipart.FormDataParam;
 import com.sun.jersey.spi.resource.Singleton;
 import org.grobid.core.exceptions.GrobidException;
@@ -20,6 +23,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import org.json.simple.JSONObject;
@@ -35,8 +39,18 @@ import java.util.ArrayList;
 import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.lang.Language;
 
-
-
+//*****************************************************
+import org.grobid.core.*;
+import org.grobid.core.data.*;
+import org.grobid.core.factory.*;
+import org.grobid.core.utilities.*;
+import org.grobid.core.engines.Engine;
+import org.grobid.core.main.GrobidHomeFinder;
+import org.grobid.core.data.Entity;
+import org.grobid.core.data.Sense;
+import org.grobid.core.engines.NERParsers;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -381,7 +395,47 @@ public class NerdRestService implements NerdPaths {
 
         return response;
     }
+    @POST
+    @Path("grobid")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response processGrobid(String query){
+        String responseString = null;
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Response response = null;
+        try {
+            String text = query;
+            NerdConfig conf = mapper.readValue(new File("data/config/mention.yaml"), NerdConfig.class);
+            String pGrobidHome = conf.getGrobidHome();
+            String pGrobidProperties = "dependency_install/grobid-0.6.0/grobid-home/config/grobid.properties";
+            GrobidHomeFinder grobidHomeFinder = new GrobidHomeFinder(Arrays.asList(pGrobidHome));
+            GrobidProperties.getInstance(grobidHomeFinder);
 
+            System.out.println(">>>>>>>> GROBID_HOME=" + GrobidProperties.get_GROBID_HOME_PATH());
+
+            NERParsers nerParser = new NERParsers();
+            JSONArray ja_respone = new JSONArray();
+            List<Entity> results = nerParser.extractNE(text);
+
+            for(Entity entity: results) {
+                System.out.println(entity.toJson());
+                ja_respone.add((String)entity.toJson().toString());
+//                ja_respone.add("aaaa");
+            }
+            response = Response
+                    .status(Response.Status.OK)
+                    .entity(ja_respone.toString())
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON + "; charset=UTF-8")
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+                    .build();
+        }
+        catch (Exception e) {
+            LOGGER.error("An unexpected exception occurs. ", e);
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+        return response;
+    }
     /**
      * Same as processQueryJson when the user send only the query and can avoid using multipart/form-data
      */
