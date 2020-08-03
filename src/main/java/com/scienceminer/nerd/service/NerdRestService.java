@@ -51,6 +51,7 @@ import org.grobid.core.data.Sense;
 import org.grobid.core.engines.NERParsers;
 import java.util.Arrays;
 import java.util.List;
+import java.nio.charset.Charset;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -240,7 +241,7 @@ public class NerdRestService implements NerdPaths {
 		final String textFieldLang =(String) textField.get(0);
 
       	File myObj = new File(inputPath);
-  		FileWriter myWriter = new FileWriter(outputPath);
+  		FileWriter myWriter = new FileWriter(outputPath,Charset.forName("utf-8"));
         Scanner myReader = new Scanner(myObj, "UTF-8");
 
         //System.out.println("InputPath ".concat(inputPath));
