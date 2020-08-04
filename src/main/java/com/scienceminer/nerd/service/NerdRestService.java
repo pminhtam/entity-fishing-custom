@@ -52,6 +52,9 @@ import org.grobid.core.engines.NERParsers;
 import java.util.Arrays;
 import java.util.List;
 import java.nio.charset.Charset;
+import java.io.OutputStreamWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -207,9 +210,10 @@ public class NerdRestService implements NerdPaths {
     @Produces(MediaType.APPLICATION_JSON)
     public Response processQueryJson(@FormDataParam(QUERY) String query,
                                      @FormDataParam(FILE) InputStream inputStream) {
+//        System.out.println("CHayj ham dissambigue ");
         String json = null;
         Response response = null;
-	JSONParser parser = new JSONParser();
+	    JSONParser parser = new JSONParser();
         try {
 		
 	
@@ -221,11 +225,21 @@ public class NerdRestService implements NerdPaths {
 		
 		//Object obj = parser.parse(query);
 		Object obj = parser.parse("{ \"text\": \"\", \"shortText\": \"computer The number of passengers coming to underground\", \"termVector\": [], \"language\": { \"lang\": \"de\" }, \"entities\": [], \"mentions\": [ \"ner\", \"wikipedia\" ], \"nbest\": false, \"sentence\": false }");
+
+//		System.out.println("CHayj ham dissambigue  226");
 		final JSONObject query_json = (JSONObject) obj;
-		//String inputFile = "part-r-00004-9bfc16ff-e010-45c8-9905-4d66c4a66507";
+//		System.out.println("CHayj ham dissambigue  228");
+//		System.out.println(query);
+
+                //String inputFile = "part-r-00004-9bfc16ff-e010-45c8-9905-4d66c4a66507";
       		//File myObj = new File("/hdd/tam/entity-fishing/data_crawl/"+ inputFile );
 		Object obj_query_info = parser.parse(query);
+//		System.out.println("CHayj ham dissambigue  231");
 		JSONObject obj_query_info_json = (JSONObject) obj_query_info;
+
+//		System.out.println((String)obj_query_info_json.toString());
+
+
 		String inputPath =(String) obj_query_info_json.get("input");
 		String outputPath = (String) obj_query_info_json.get("output");
 		final JSONArray textField =(JSONArray) obj_query_info_json.get("text_field");
@@ -241,7 +255,9 @@ public class NerdRestService implements NerdPaths {
 		final String textFieldLang =(String) textField.get(0);
 
       	File myObj = new File(inputPath);
-  		FileWriter myWriter = new FileWriter(outputPath,Charset.forName("utf-8"));
+//  		FileWriter myWriter = new FileWriter(outputPath,Charset.forName("utf-8"));
+        OutputStreamWriter myWriter = new OutputStreamWriter(new FileOutputStream(outputPath), StandardCharsets.UTF_8);
+//  		FileWriter myWriter = new FileWriter(outputPath);
         Scanner myReader = new Scanner(myObj, "UTF-8");
 
         //System.out.println("InputPath ".concat(inputPath));
