@@ -280,7 +280,7 @@ public class NerdRestService implements NerdPaths {
 
         //System.out.println(String.valueOf(myReader.hasNextLine()));
         //LOGGER.info(String.valueOf(myReader.hasNextLine()));
-	// Read list of company 
+	// Read list of company
 	ArrayList<String> listCompanyName = new ArrayList<>();
 	File list_company = new File("list_company_name.txt");
 	Scanner myReaderListCompanyName = new Scanner(list_company, "UTF-8");
@@ -378,7 +378,7 @@ public class NerdRestService implements NerdPaths {
 		//query_json = (JSONObject) obj;
 		System.out.println(query_json);
 
-                //json = nerdProcessQuery.processQuery(query);
+                json = nerdProcessQuery.processQuery(query_json.toString());
 		//System.out.println(query);
 		//System.out.println(json);
             }
