@@ -310,7 +310,7 @@ public class NerdRestService implements NerdPaths {
             if (listData.size()>numThreads){
                for (int i = 0; i < threads.length; i++){
                   final int index = i+1;
-			      System.out.println("chay vong lap thread");
+			    //System.out.println("chay vong lap thread");
 			    //final obj = parser.parse(listData.get(index));
                             //final JSONObject query_json_file = (JSONObject) obj;
                             //final Object obj2 = parser.parse(query);
@@ -351,7 +351,7 @@ public class NerdRestService implements NerdPaths {
                         listData.clear();
                         listResult.clear();
                     }
-		    System.out.println("Het 1 vong lap");
+		    //System.out.println("Het 1 vong lap");
                 }
 		
 
