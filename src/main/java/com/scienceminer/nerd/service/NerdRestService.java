@@ -181,7 +181,8 @@ public class NerdRestService implements NerdPaths {
     }
 
     private static String processLine(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery,JSONArray textField,String resultLangStr){
-	    
+
+        JSONParser parser = new JSONParser();
 	String query_string = "";
 	for (int i =0 ; i<textField.size();i++){
 		query_string += "  ";
@@ -199,8 +200,34 @@ public class NerdRestService implements NerdPaths {
 	//System.out.println(new_query_json.get("language"));
 	//System.out.println(new_query_json.toString());
 	//System.out.println("chay thread ne");
-	String json = nerdProcessQuery.processQuery(new_query_json.toString());
-	query_json_file.put("result",json);
+        String json = nerdProcessQuery.processQuery(new_query_json.toString());
+        String result_string = "";
+        try {
+
+            Object obj = parser.parse(json);
+            JSONObject result_json = (JSONObject) obj;
+            result_json.remove("text");
+            result_json.remove("software");
+            result_string = (String) result_json.toString();
+        }
+        catch (Exception e) {
+            result_string = json;
+        }
+        // Indeed
+        query_json_file.remove("jobTitle");
+        query_json_file.remove("jobDescription");
+        query_json_file.remove("nextUrl");
+        query_json_file.remove("companyDomain");
+        query_json_file.remove("processedUrl");
+
+        //Patent
+        query_json_file.remove("abstract");
+        query_json_file.remove("title");
+        query_json_file.remove("name_last");
+        query_json_file.remove("name_first");
+
+
+        query_json_file.put("result",result_string);
 	return query_json_file.toString();
 						    //        myWriter.write(json+"\n");
 	}
