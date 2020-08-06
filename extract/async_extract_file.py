@@ -28,7 +28,7 @@ async def entity_fishing(input_path, output_path,text_field, company_field):
     # multipart_data.add_field("output",output_path)
     # multipart_data.add_field("text_field",text_field)
     multipart_data.add_field('query', query_json, content_type='multipart/form-data')
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=12000)) as session:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=120000)) as session:
         async with session.post(url, data=multipart_data) as resp:
             try:
                 resp.raise_for_status()
