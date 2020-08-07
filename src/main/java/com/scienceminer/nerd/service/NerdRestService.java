@@ -208,10 +208,13 @@ public class NerdRestService implements NerdPaths {
             JSONObject result_json = (JSONObject) obj;
             result_json.remove("text");
             result_json.remove("software");
-            result_string = (String) result_json.toString();
+
+            query_json_file.put("result",result_json);
+//            result_string = (String) result_json.toString();
         }
         catch (Exception e) {
-            result_string = json;
+            query_json_file.put("result",json);
+//            result_string = json;
         }
         // Indeed
         query_json_file.remove("jobTitle");
@@ -227,7 +230,7 @@ public class NerdRestService implements NerdPaths {
         query_json_file.remove("name_first");
 
 
-        query_json_file.put("result",result_string);
+//        query_json_file.put("result",result_string);
 	return query_json_file.toString();
 						    //        myWriter.write(json+"\n");
 	}
@@ -253,10 +256,7 @@ public class NerdRestService implements NerdPaths {
 		//Object obj = parser.parse(query);
 		Object obj = parser.parse("{ \"text\": \"\", \"shortText\": \"computer The number of passengers coming to underground\", \"termVector\": [], \"language\": { \"lang\": \"de\" }, \"entities\": [], \"mentions\": [ \"ner\", \"wikipedia\" ], \"nbest\": false, \"sentence\": false }");
 
-//		System.out.println("CHayj ham dissambigue  226");
 		final JSONObject query_json = (JSONObject) obj;
-//		System.out.println("CHayj ham dissambigue  228");
-//		System.out.println(query);
 
                 //String inputFile = "part-r-00004-9bfc16ff-e010-45c8-9905-4d66c4a66507";
       		//File myObj = new File("/hdd/tam/entity-fishing/data_crawl/"+ inputFile );
@@ -338,18 +338,10 @@ public class NerdRestService implements NerdPaths {
                for (int i = 0; i < threads.length; i++){
                   final int index = i+1;
 			      System.out.println("chay vong lap thread");
-			    //final obj = parser.parse(listData.get(index));
-                            //final JSONObject query_json_file = (JSONObject) obj;
-                            //final Object obj2 = parser.parse(query);
-                            //final query_json = (JSONObject) obj2;
-                            //String result = processLine(query_json_file,query_json,nerdProcessQuery);
-			
+
                             threads[i] = new Thread(new Runnable() {
                                public void run() {
-                                    //Object obj = parser.parse(listData.get(index));
-                                    //JSONObject query_json_file = (JSONObject) obj;
-                                    //Object obj2 = parser.parse(query);
-                                    //JSONObject query_json = (JSONObject) obj2;
+
 				    String resultLangStr = "en";
 				    synchronized (languageIdentifier) {
 					//resultLang = languageIdentifier.runLanguageId((String)listData.get(index).get(textField));
@@ -380,34 +372,13 @@ public class NerdRestService implements NerdPaths {
                     }
 		    System.out.println("Het 1 vong lap");
                 }
-		
 
-		//ExecutorService executorService = Executors.newFixedThreadPool(16);
-
-		/*
-	        whele (myReader.hasNextLine()) {
-			String data = myReader.nextLine();
-
-			obj = parser.parse(data);
-			JSONObject query_json_file = (JSONObject) obj;
-			String query_string = (String) query_json_file.get("abstract");
-			
-			query_json.put("text", query_string);
-			json = nerdProcessQuery.processQuery(query_json.toString());
-			myWriter.write(json+"\n");
-			System.out.println(json);
-			System.out.println(query_json_file["abstract"]);
-		}
-		*/
 		myReader.close();
 		myWriter.close();
-		//obj = parser.parse(query);
-		//query_json = (JSONObject) obj;
+
 		System.out.println(query_json);
 
                 json = nerdProcessQuery.processQuery(query_json.toString());
-		//System.out.println(query);
-		//System.out.println(json);
             }
 
             if (json == null) {
@@ -439,6 +410,175 @@ public class NerdRestService implements NerdPaths {
 
         return response;
     }
+    /***************************** Website ****************************************/
+    private static String processLineWeb(JSONObject query_json_file,JSONObject query_json,NerdRestProcessQuery nerdProcessQuery,String resultLangStr){
+
+        String query_string = query_json_file.get("strings").toString();
+//        System.out.println("query_string  laf ::  " + query_string);
+        //String query_string = (String) query_json_file.get(textField);
+        JSONObject new_query_json = new JSONObject(query_json);
+        new_query_json.put("text", query_string);
+        //System.out.println(new_query_json.get("language"));
+        //System.out.println(new_query_json.toString());
+        JSONObject jsonLang = new JSONObject();
+        jsonLang.put("lang",resultLangStr);
+        new_query_json.put("language",jsonLang);
+
+        //System.out.println(new_query_json.get("language"));
+        //System.out.println(new_query_json.toString());
+        //System.out.println("chay thread ne");
+        String json = nerdProcessQuery.processQuery(new_query_json.toString());
+        String result_string = "";
+        JSONParser parser = new JSONParser();
+        try {
+
+            Object obj = parser.parse(json);
+            JSONObject result_json = (JSONObject) obj;
+            result_json.remove("text");
+            result_json.remove("software");
+            query_json_file.put("result",result_json);
+//            result_string = (String) result_json.toString();
+        }
+        catch (Exception e) {
+//            result_string = json;
+            query_json_file.put("result",json);
+        }
+        // Website
+        query_json_file.remove("strings");
+
+
+
+//        query_json_file.put("result",result_string);
+        return query_json_file.toString();
+        //        myWriter.write(json+"\n");
+    }
+
+    @POST
+    @Path("website")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response processQueryJsonWeb(@FormDataParam(QUERY) String query,
+                                     @FormDataParam(FILE) InputStream inputStream) {
+        System.out.println("CHayj ham dissambigue web ");
+        String json = null;
+        Response response = null;
+        JSONParser parser = new JSONParser();
+        try {
+
+
+            if (inputStream != null) {
+                json = nerdProcessFile.processQueryAndPdfFile(query, inputStream);
+            } else {
+                System.out.println(query);
+
+                Object obj = parser.parse("{ \"text\": \"\", \"shortText\": \"computer The number of passengers coming to underground\", \"termVector\": [], \"language\": { \"lang\": \"de\" }, \"entities\": [], \"mentions\": [ \"ner\", \"wikipedia\" ], \"nbest\": false, \"sentence\": false }");
+
+                final JSONObject query_json = (JSONObject) obj;
+
+                Object obj_query_info = parser.parse(query);
+                JSONObject obj_query_info_json = (JSONObject) obj_query_info;
+
+                System.out.println((String) obj_query_info_json.toString());
+
+                String inputPath =(String) obj_query_info_json.get("input");
+                String outputPath = (String) obj_query_info_json.get("output");
+
+                File myObj = new File(inputPath);
+                OutputStreamWriter myWriter = new OutputStreamWriter(new FileOutputStream(outputPath), StandardCharsets.UTF_8);
+                Scanner myReader = new Scanner(myObj, "UTF-8");
+                int numThreads = 15;
+
+                Thread[] threads = new Thread[numThreads];
+                final ArrayList<JSONObject> listData = new ArrayList<>(numThreads);
+                ArrayList<String> listResult = new ArrayList<>(numThreads);
+                Object obj2;
+
+                LanguageUtilities languageIdentifier = LanguageUtilities.getInstance();
+                final Language resultLang = null;
+
+                while (myReader.hasNextLine()) {
+                    String data = myReader.nextLine();
+                    obj2 = parser.parse(data);
+                    JSONObject query_json_file = (JSONObject) obj2;
+                    listData.add(query_json_file);
+                    //final listData;
+                    if (listData.size()>numThreads){
+                        for (int i = 0; i < threads.length; i++){
+                            final int index = i+1;
+                            System.out.println("chay vong lap thread");
+
+                            threads[i] = new Thread(new Runnable() {
+                                public void run() {
+
+                                    String resultLangStr = "en";
+                                    synchronized (languageIdentifier) {
+                                        //resultLang = languageIdentifier.runLanguageId((String)listData.get(index).get(textField));
+                                        resultLangStr = languageIdentifier.runLanguageId((String)listData.get(index).get("strings").toString()).getLang();
+                                        //if(resultLang!=null){
+                                        //	resultLangStr = resultLang.getLang();
+                                        //}
+                                        System.out.println(resultLangStr);
+                                    }
+                                    String result = processLineWeb(listData.get(index),query_json,nerdProcessQuery,resultLangStr);
+                                    synchronized (listResult){
+                                        listResult.add(result);
+                                    }
+                                }
+                            });
+                            threads[i].start();
+
+                        }
+                        for (int i = 0; i < threads.length; i++){
+                            threads[i].join();
+                        }
+                        for (String e:listResult
+                        ) {
+                            myWriter.write(e+"\n");
+                        }
+                        listData.clear();
+                        listResult.clear();
+                    }
+                    System.out.println("Het 1 vong lap");
+                }
+
+                myReader.close();
+                myWriter.close();
+
+                System.out.println(query_json);
+
+                json = nerdProcessQuery.processQuery(query_json.toString());
+            }
+
+            if (json == null) {
+                response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            } else {
+                response = Response
+                        .status(Response.Status.OK)
+                        .entity(json)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON + "; charset=UTF-8")
+                        .header("Access-Control-Allow-Origin", "*")
+                        .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+                        .build();
+            }
+
+        } catch (QueryException qe) {
+            return handleQueryException(qe, query);
+        } catch (NoSuchElementException nseExp) {
+            LOGGER.error("Could not get an engine from the pool within configured time. Sending service unavailable.");
+            response = Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        } catch (GrobidException ge) {
+            response = Response
+                    .status(Response.Status.SERVICE_UNAVAILABLE)
+                    .entity("The PDF cannot be processed by grobid. " + ge.getMessage())
+                    .build();
+        } catch (Exception e) {
+            LOGGER.error("An unexpected exception occurs. ", e);
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return response;
+    }
+
     @POST
     @Path("grobid")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -480,6 +620,9 @@ public class NerdRestService implements NerdPaths {
         }
         return response;
     }
+
+
+    /***********************************************************************/
     /**
      * Same as processQueryJson when the user send only the query and can avoid using multipart/form-data
      */
