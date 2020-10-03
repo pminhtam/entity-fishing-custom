@@ -1,0 +1,10 @@
+version: "0.1"
+services:
+  entity-fishing:
+    build: .
+    ports:
+      - "3090:3090"
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
