@@ -1,0 +1,23 @@
+site_name: GROBID NER Documentation
+repo_url: https://github.com/kermitt2/grobid-ner/
+repo_name: GitHub
+theme: readthedocs
+site_description: Documentation for GROBID NER
+docs_dir: doc
+extra_css:
+  - 'custom.css'
+include_search: true
+pages:
+- Home: 'index.md'
+- About:
+  - 'Licence': 'Licence.md'
+- User Manual:
+  - 'Build and install': 'build-and-install.md'
+  - 'Using grobid-ner': 'using-grobid-ner.md'
+  - 'Annotation guidelines': 'annotation-guidelines.md'
+  - 'Classes and senses': 'class-and-senses.md'
+  - 'Largest entity mention': 'largest-entity-mention.md'
+  - 'Second-layers entity mention': 'second-layers-entity-mention.md'
+  - 'Annotation examples': 'annotation-examples.md'
+  - 'Datasets and training': 'training-ner-model.md'
+  - 'Generate training data': 'generate-training-data.md'
