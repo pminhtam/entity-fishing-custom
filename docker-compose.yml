@@ -1,9 +1,13 @@
-version: "3.8"
+version: "3.3"
 services:
   entity-fishing:
     build: .
     ports:
       - "3090:3090"
+    volumes:
+      - "/home/thang.duong/data/:/home/thang.duong/data/"
+      - "/mnt/tmm_share/:/home/thang.duong/tmm_share/"
+      - "/home/thang.duong/output_all:/home/thang.duong/output_all/"
   mongo:
     image: "mongo"
     ports:

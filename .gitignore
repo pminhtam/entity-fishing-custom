@@ -10,7 +10,6 @@ build
 *.log.*
 *.old
 *.obj
-*.zip
 data/maps/customisations.obj
 data/db/db-*
 data/db/domains-en.db
